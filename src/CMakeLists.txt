@@ -29,6 +29,7 @@ include_directories(
 # Create a static library (compiled and linked completely -> One big executable)
 add_library(${PROJECT_NAME} STATIC 
     ${CMAKE_SOURCE_DIR}/src/main.cpp
+    ${CMAKE_SOURCE_DIR}/src/viewer.cpp
     )
 
 # Link external libraries (opencv, eigen and our custom library)
