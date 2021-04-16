@@ -38,3 +38,4 @@ dynamicRRT.code-workspace
 build/
 lib/
 bin/
+.vscode/
