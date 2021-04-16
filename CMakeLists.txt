@@ -12,6 +12,9 @@ project(dynamicRRT)
 # Set C++ Standard to C++11
 set(CMAKE_CXX_STANDARD 11)
 
+# Link to pthreads library for multithreading
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 # Create any folders if not present
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
