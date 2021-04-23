@@ -1,6 +1,16 @@
 {
     "files.associations": {
         "unordered_set": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "cmath": "cpp",
+        "chrono": "cpp",
+        "fstream": "cpp",
+        "ios": "cpp",
+        "list": "cpp",
+        "regex": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "memory": "cpp",
+        "utility": "cpp"
     }
 }
