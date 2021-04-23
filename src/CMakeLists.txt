@@ -31,6 +31,8 @@ add_library(${PROJECT_NAME} STATIC
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     ${CMAKE_SOURCE_DIR}/src/viewer.cpp
     ${CMAKE_SOURCE_DIR}/src/state.cpp
+    ${CMAKE_SOURCE_DIR}/src/Obstacle.cpp
+    ${CMAKE_SOURCE_DIR}/src/Map.cpp
     )
 
 # Link external libraries (opencv, eigen and our custom library)
@@ -44,5 +46,5 @@ add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 target_link_libraries(main PUBLIC ${PROJECT_NAME})
 
 # Add unit_test executables
-# add_executable(viewer ${CMAKE_CURRENT_SOURCE_DIR}/test_viewer.cpp)
-# target_link_libraries(viewer PUBLIC ${PROJECT_NAME})
+# add_executable(map ${CMAKE_CURRENT_SOURCE_DIR}/testMap.cpp)
+# target_link_libraries(map PUBLIC ${PROJECT_NAME})

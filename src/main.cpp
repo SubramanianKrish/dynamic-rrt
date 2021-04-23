@@ -11,6 +11,8 @@
 #include <unistd.h>
 
 #include "viewer.h"
+#include "Map.h"
+#include "Obstacle.h"
 #include "state.h"
 #include "search_tree.h"
 
@@ -19,10 +21,9 @@ using namespace std;
 int main(){
     cout << "Starting program" << endl;
 
-    string image_path = "../lavalle.jpg";
-    cv::Mat planning_image = cv::imread(image_path);
+    Map* test_map = new Map();
 
-    viewer* env_viewer = new viewer(planning_image);
+    viewer* env_viewer = new viewer(test_map);
     std::thread render_thread(&viewer::run, env_viewer);
 
     std::uniform_real_distribution<double> x_dist(0,20.0);
