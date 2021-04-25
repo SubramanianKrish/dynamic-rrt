@@ -33,6 +33,7 @@ add_library(${PROJECT_NAME} STATIC
     ${CMAKE_SOURCE_DIR}/src/state.cpp
     ${CMAKE_SOURCE_DIR}/src/Obstacle.cpp
     ${CMAKE_SOURCE_DIR}/src/Map.cpp
+    ${CMAKE_SOURCE_DIR}/src/DynamObstacle.cpp
     )
 
 # Link external libraries (opencv, eigen and our custom library)
