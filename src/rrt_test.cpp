@@ -69,7 +69,7 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal, vector<Node*> plan)
         if(goal_reached)
         {
             cout << "Path Found" << endl;
-            return;
+            break;
         }
     }
 
