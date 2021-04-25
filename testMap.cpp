@@ -9,7 +9,7 @@ using namespace std;
 int main() {
     Map test_map;
     // get static obstacle vector in the map
-    vector<Obstacle> stat_obs = test_map.get_static_obs_vec();
+    vector<Obstacle*> stat_obs = test_map.get_static_obs_vec();
     // get map size
     double x_size = test_map.get_x_size();
     double y_size = test_map.get_y_size();
@@ -18,7 +18,7 @@ int main() {
     cout << "The map has a size of (" << x_size << "x" << y_size << ")" << endl;
 
     // extract the first obstacle
-    Obstacle obs1 = stat_obs[0];
+    Obstacle obs1 = *stat_obs[0];
     vector<double> feat1 = obs1.get_obs_feature(); 
     // check if obstacle is static
     bool is_static = obs1.isStatic();
@@ -41,8 +41,8 @@ int main() {
     }
 
     // test dynamics obstacle
-    vector<DynamObstacle> dynam_obs_vec = test_map.get_dynam_obs_vec();
-    DynamObstacle d0 = dynam_obs_vec[0];
+    vector<DynamObstacle*> dynam_obs_vec = test_map.get_dynam_obs_vec();
+    DynamObstacle d0 = *dynam_obs_vec[0];
     // inspect position at different timesteps
     double curr_step = 60.0; // TODO: change this value to inspect dynamics obstacle position output
     vector<double> dynam_feat0 = d0.get_obs_feature(121.0);
