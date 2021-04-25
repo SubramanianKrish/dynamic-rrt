@@ -1,18 +1,13 @@
+# pragma once
+
 #include <algorithm>
 #include <vector>
 #include <random>
 
-// #include "Obstacle.h"
-// #include "Map.h"
+#include "Map.h"
 #include "Node.h"
 
 using namespace std;
-
-std::random_device rd;  //Will be used to obtain a seed for the random number engine
-std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-std::uniform_real_distribution<> dis_x(0, this->map.get_x_size());
-std::uniform_real_distribution<> dis_y(0, this->map.get_y_size());
-std::uniform_real_distribution<> dis(1, 100);
 
 class RRT
 {
@@ -22,6 +17,13 @@ public:
     Node* Start;
     Node* Goal;
     vector<Node*> plan;
+    
+    // std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen; //Standard mersenne_twister_engine 
+    
+    std::uniform_real_distribution<> dis;
+    std::uniform_real_distribution<> dis_x;
+    std::uniform_real_distribution<> dis_y;
 
     RRT(Map* map, Node* Start, Node* Goal, vector<Node*> plan);
 
@@ -41,7 +43,7 @@ public:
     int nearest_neighbor(double qrand_x, double qrand_y);
 
     // Valid Edge
-    bool valid_edge(double qrand_x, double qrand_y, int qnearID, double &qnew_x, double &qnew_y, double E);
+    bool valid_edge(double qrand_x, double qrand_y, int qnearID, double *qnew_x, double *qnew_y, double E);
 
     // Extend
     void extend(double qrand_x, double qrand_y, double E);

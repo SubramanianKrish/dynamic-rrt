@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <vector>
 #include <random>
+#include <iostream>
 
 // #include "Obstacle.h"
 // #include "Map.h"
@@ -15,49 +16,57 @@ RRT::RRT(Map* map, Node* Start, Node* Goal, vector<Node*> plan){
     this->Start = Start;
     this->Goal = Goal;
     this->plan = plan;
+
+    dis = std::uniform_real_distribution<>(1.0, 100.0);
+    dis_x = std::uniform_real_distribution<>(0, map->get_x_size());
+    dis_y = std::uniform_real_distribution<>(0, map->get_y_size());    
 }
 
 // Add Vertex
 int RRT::add_vertex(double qnew_x, double qnew_y)
 {
     int size = this->samples.size();
-    this->samples.push_back(Node());
-    this->samples[size].x = qnew_x;
-    this->samples[size].y = qnew_y;
-    this->samples[size].ID = size;
+    Node* new_node = new Node();
+    this->samples.push_back(new_node);
+    this->samples[size]->x = qnew_x;
+    this->samples[size]->y = qnew_y;
+    this->samples[size]->ID = size;
+
+    return size;
 }
 
 // Add Edge
-inline void RRT::add_edge(int child, int parent)
+void RRT::add_edge(int child, int parent)
 {   
-    this->samples[child].parentID = parent;
+    this->samples[child]->parentID = parent;
     return;
 }
 
 // Random Sample
-inline void RRT::random_sample(double* qrand_x, double* qrand_y);
+void RRT::random_sample(double* qrand_x, double* qrand_y)
 {
     *qrand_x = dis_x(gen);
     *qrand_y = dis_y(gen);
+    std::cout << "Inside the random sample genereator" << std::endl;
     return;
 }
 
 // Goal Sample
-inline void RRT::goal_sample(double* qrand_x, double* qrand_y);
+void RRT::goal_sample(double* qrand_x, double* qrand_y)
 {
-    *qrand_x = this->Goal.x;
-    *qrand_y = this->Goal.y;
+    *qrand_x = this->Goal->x;
+    *qrand_y = this->Goal->y;
     return;
 }
 
 // Nearest Neighbor
 int RRT::nearest_neighbor(double qrand_x, double qrand_y)
 {
-    double dist, min_dist = INT8_MAX;
+    double dist, min_dist = 1e5;
     int index;
     for(int i = 0; i < this->samples.size(); i++)
     {
-        dist = sqrt(pow(qrand_x - this->samples[i].x, 2) + pow(qrand_y - this->samples[i].y, 2));
+        dist = sqrt(pow(qrand_x - this->samples[i]->x, 2) + pow(qrand_y - this->samples[i]->y, 2));
         if(min_dist > dist)
         {
             min_dist = dist;
@@ -70,8 +79,8 @@ int RRT::nearest_neighbor(double qrand_x, double qrand_y)
 // Valid Edge
 bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x, double* qnew_y, double E)
 {   
-    double qnear_x = this->samples[qnearID].x;
-    double qnear_y = this->samples[qnearID].y;
+    double qnear_x = this->samples[qnearID]->x;
+    double qnear_y = this->samples[qnearID]->y;
     double dist = sqrt(pow(qrand_x - qnear_x, 2) + pow(qrand_y - qnear_y, 2)); 
     int num_steps = 10;
     double min_step = E / num_steps;
@@ -79,7 +88,7 @@ bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x
     {
         *qnew_x = qnear_x + (min_step * (qrand_x - qnear_x) / dist);
         *qnew_y = qnear_y + (min_step * (qrand_y - qnear_y) / dist);
-        if(!this->map.isValidPoint(*qnew_x, *qnew_y))
+        if(!this->map->isValidPoint(*qnew_x, *qnew_y))
         {
             return false;
         }
@@ -99,20 +108,21 @@ void RRT::extend(double qrand_x, double qrand_y, double E)
 {   
     double qnew_x, qnew_y;
     int qnearID = nearest_neighbor(qrand_x, qrand_y);
-    bool status = bool valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E);
+    bool status = valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E);
     if(status)
     {
         int childID = add_vertex(qnew_x, qnew_y);
         add_edge(childID, qnearID);
-        this->samples[childID].g = sqrt(pow(this->samples[qnearID].x - qnew_x, 2) + pow(this->samples[qnearID].y - qnew_y, 2)) + this->samples[qnearID].g; 
+        this->samples[childID]->g = sqrt(pow(this->samples[qnearID]->x - qnew_x, 2) + pow(this->samples[qnearID]->y - qnew_y, 2)) + this->samples[qnearID]->g; 
     }
+
     return;
 }
 
 // Reached Goal
-inline bool RRT::reached_goal(int index)
+bool RRT::reached_goal(int index)
 {
-    if(this->samples[index].x == this->Goal.x && this->samples[index].y == this->Goal.y)
+    if(this->samples[index]->x == this->Goal->x && this->samples[index]->y == this->Goal->y)
     {
         return true;
     }
@@ -122,19 +132,19 @@ inline bool RRT::reached_goal(int index)
 // Backtrack
 void RRT::backtrack(vector<Node*> plan)
 {
-    int child = this->sample.size() - 1;
-    plan.push_back(this->sample[child]);
-    int parent = this->sample[child].parentID;
+    int child = this->samples.size() - 1;
+    plan.push_back(this->samples[child]);
+    int parent = this->samples[child]->parentID;
     while(!parent == -1)
     {
         child = parent;
-        plan.push_back(this->sample[child]);
-        parent = this->sample[child].parentID;
+        plan.push_back(this->samples[child]);
+        parent = this->samples[child]->parentID;
     }
 }
 
 // Rand90
-inline bool RRT::Rand90()
+bool RRT::Rand90()
 {
     if(dis(gen) <= 90)
     {
