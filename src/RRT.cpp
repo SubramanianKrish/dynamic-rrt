@@ -47,7 +47,7 @@ void RRT::random_sample(double* qrand_x, double* qrand_y)
 {
     *qrand_x = dis_x(gen);
     *qrand_y = dis_y(gen);
-    std::cout << "Inside the random sample genereator" << std::endl;
+    // std::cout << "Inside the random sample genereator" << std::endl;
     return;
 }
 
@@ -86,8 +86,8 @@ bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x
     double min_step = E / num_steps;
     for(int i = 0; i < num_steps; i++)
     {
-        *qnew_x = qnear_x + (min_step * (qrand_x - qnear_x) / dist);
-        *qnew_y = qnear_y + (min_step * (qrand_y - qnear_y) / dist);
+        *qnew_x = qnear_x + (min_step * (i + 1) * (qrand_x - qnear_x) / dist);
+        *qnew_y = qnear_y + (min_step * (i + 1) * (qrand_y - qnear_y) / dist);
         if(!this->map->isValidPoint(*qnew_x, *qnew_y))
         {
             return false;
@@ -115,7 +115,6 @@ void RRT::extend(double qrand_x, double qrand_y, double E)
         add_edge(childID, qnearID);
         this->samples[childID]->g = sqrt(pow(this->samples[qnearID]->x - qnew_x, 2) + pow(this->samples[qnearID]->y - qnew_y, 2)) + this->samples[qnearID]->g; 
     }
-
     return;
 }
 
@@ -141,6 +140,7 @@ void RRT::backtrack(vector<Node*> plan)
         plan.push_back(this->samples[child]);
         parent = this->samples[child]->parentID;
     }
+    return;
 }
 
 // Rand90
@@ -201,6 +201,110 @@ bool RRT::Rand90()
 //         int childID = add_vertex(qnew_x, qnew_y);
 //         add_edge(childID, qnearID);
 //         this->samples[childID].g = sqrt(pow(this->samples[qnearID].x - qnew_x, 2) + pow(this->samples[qnearID].y - qnew_y, 2)) + this->samples[qnearID].g; 
+//     }
+//     return;
+// }
+
+// // RRT Star
+// // Neighbors in Radius
+// void RRT::neighbors_radius(int qnewID, double radius, vector<int> &neighborID)
+// {   
+//     double qnew_x = this->samples[qnewID]->x, qnew_y = this->samples[qnewID]->y;
+//     for(int i = 0; i < this->samples.size())
+//     {   
+//         if(i == qnewID) continue;
+//         double curr_sample_x = this->samples[i]->x, curr_sample_y = this->samples[i]->y;
+//         double dist = sqrt(pow(curr_sample_x - qnew_x, 2) + pow(curr_sample_y - qnew_y, 2));
+//         if(dist < radius)
+//         {   
+//             int num_steps = 10;
+//             double min_step = dist / num_steps;
+//             double intermediate_x = qnew_x, intermediate_y = qnew_y;
+//             for(int j = 0; j < num_steps; j++)
+//             {
+//                 intermediate_x = qnew_x + (min_step * (j + 1) * (curr_sample_x - qnew_x) / dist);
+//                 intermediate_y = qnew_y + (min_step * (j + 1) * (curr_sample_y - qnew_y) / dist);
+//                 if(!this->map->isValidPoint(intermediate_x, intermediate_y)) break;
+//             }
+//         }
+//         neighborID.push_back(i);
+//     }
+//     return;
+// }
+
+// // Add Edge with Minimum Cost
+// void RRT::add_mincost_edge(int qnewID, vector<int> &neighborID)
+// {
+//     int min_index;
+//     double mincost = 1e-5;
+//     for(int i = 0; i < neighborID.size(); i++)
+//     {
+//         double cost = sqrt(pow(this->samples[i]->x - this->samples[qnewID]->x, 2) + pow(this->samples[i]->y - this->samples[qnewID]->y, 2)) + this->samples[i]->g;
+//         if(mincost > cost)
+//         {
+//             min_index = neighborID[i];
+//             mincost = cost;
+//         }
+//     }
+//     add_edge(qnewID, min_index);
+//     this->samples[qnewID]->g = mincost;
+//     return;
+// }
+
+// // // Update Edge
+// // void RRT::update_edge(int qnewID, int qnearID)
+// // {
+// //     add_edge(qnewID, qnearID);
+// //     this->samples[qnearID]->g = sqrt(pow(this->samples[qnewID]->x - this->samples[qnearID]->x, 2) + pow(this->samples[qnewID]->y - this->samples[qnearID]->y, 2)) + this->samples[qnewID]->g;
+// //     return;
+// // }
+
+// // Rewire
+// void RRT::rewire(int qnewID, vector<int> &neighborID)
+// {
+//     for(int i = 0; i < neighborID.size(); i++)
+//     {
+//         double cost = sqrt(pow(this->samples[qnewID]->x - this->samples[neighborID[i]]->x, 2) + pow(this->samples[qnewID]->y - this->samples[neighborID[i]]->y, 2)) + this->samples[qnewID]->g;
+//         if(this->samples[neighborID[i]]->g > cost)
+//         {
+//             // Necessary to Check Valid Edge?
+//             add_edge(qnewID, neighborID[i]);
+//             this->samples[qnearID]->g = cost;
+//         }
+//     }
+//     return;
+// }
+
+// // Radius for RRT*
+// double RRT::radius(double E, double gamma)
+// {
+//     auto v = this->samples.size();
+//     double delta = 3.1415; // Volume of Unit Hyperball
+//     double value = sqrt(gamma * log(v) / (v * delta));
+//     double r = min(value, E);
+//     return r;
+// }
+
+// // Extend and Rewire
+// void RRT::extend_rewire(vector<double> &qrand, double E, double gamma)
+// {
+//     double qnew_x, qnew_y;
+//     int qnearID = nearest_neighbor(qrand_x, qrand_y);
+//     bool status = valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E);
+//     if(status)
+//     {   
+//         // Add qnew to tree
+//         int childID = add_vertex(qnew_x, qnew_y);
+//         add_edge(childID, qnearID);
+//         this->samples[childID]->g = sqrt(pow(this->samples[qnearID]->x - qnew_x, 2) + pow(this->samples[qnearID]->y - qnew_y, 2)) + this->samples[qnearID]->g; 
+
+//         // Find neighbors in radius of qnew
+//         vector<int> neighborID;
+//         double r = radius(E, gamma);
+//         neighbors_radius(childID, r, neighborID);
+
+//         // Rewire
+//         rewire(childID, neighborID);
 //     }
 //     return;
 // }
