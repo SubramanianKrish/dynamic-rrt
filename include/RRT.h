@@ -62,4 +62,23 @@ public:
 
     // // Extend for RRT Connect
     // void extend_connect(double qrand_x, double qrand_y);
+
+    // // RRT Star
+    // // Neighbors in Radius
+    // void neighbors_radius(int qnewID, double radius, vector<int> &neighbors);
+
+    // // Add Edge with Minimum Cost
+    // void add_mincost_edge(int qnewID, vector<int> &neighbors);
+
+    // // // Update Edge
+    // // void update_edge(int qnewID, int qnearID);
+
+    // // Rewire
+    // void rewire(int qnewID, vector<int> &neighborIDs);
+
+    // // Radius for RRT*
+    // double radius(double E, double gamma);
+
+    // // Extend and Rewire
+    // void extend_rewire(vector<double> &qrand, double E, double gamma);
 };
