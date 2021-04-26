@@ -13,6 +13,7 @@
 
 #include "Map.h"
 #include "Obstacle.h"
+#include "World.h"
 
 class viewer
 {
@@ -20,6 +21,7 @@ private:
     cv::Mat background;
     int refresh_rate;               // viewer refresh rate in ms
     Map* map;
+    World* world;
     double map_width, map_height;
     const float scale_factor = 10.0;
     
@@ -28,13 +30,13 @@ private:
 
 public:
     // ctor for viewer
-    viewer(Map* ptrMap);
+    viewer(Map* ptrMap, World* ptrWorld);
 
     // main function to display env - Bind to another thread
     void run();
 
     // utility drawing functions
-    void DrawObstacle(Obstacle* obst, cv::Mat& scene);
+    void DrawObstacle(vector<double>& features, cv::Mat& scene);
 
     // utils to get, set shared vars
     bool requestViewerClosure();

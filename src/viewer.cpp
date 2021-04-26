@@ -2,14 +2,13 @@
 
 using namespace std;
 
-viewer::viewer(Map* ptrMap): map(ptrMap), closeViewer(false), refresh_rate(25) // refresh at 40Hz
+viewer::viewer(Map* ptrMap, World* ptrWorld): map(ptrMap), closeViewer(false), refresh_rate(25), world(ptrWorld) // refresh at 40Hz
 {
     map_width = map->get_x_size();
     map_height = map->get_y_size();
 }
 
-void viewer::DrawObstacle(Obstacle* obst, cv::Mat& scene){
-    vector<double> features = obst->get_obs_feature();
+void viewer::DrawObstacle(vector<double>& features, cv::Mat& scene){
     if(features.size() == 3)
         circle(scene, cv::Point2f((features[0]*scale_factor), (map_height - features[1])*scale_factor), (int)features[2]*scale_factor, cv::Scalar(0,0,0),CV_FILLED);
     
@@ -40,20 +39,25 @@ void viewer::run()
     
     vector<Obstacle*> static_obs = map->get_static_obs_vec();
     // Draw static obstacles onto background
-    for(Obstacle* cur_obst: static_obs)
-        if(cur_obst->isStatic())
+    for(Obstacle* cur_obst: static_obs){
+        if(cur_obst->isStatic()){
+            vector<double> features = cur_obst->get_obs_feature();
             // draw circular static obstacles
-            DrawObstacle(cur_obst, background);
+            DrawObstacle(features, background);
+        }
+    }
 
     vector<DynamObstacle*> dynamic_obs = map->get_dynam_obs_vec();
 
     while(!isViewerClosed()){
         cv::Mat cur_scene = background.clone();
-        for(auto& cur_dyn_obst: dynamic_obs)
+        unsigned long int cur_time = world->get_system_time();
+        for(auto& cur_dyn_obst: dynamic_obs){
             // Draw the dynamic obstacle
-            continue;
-
-        cv::imshow("Environment display", background);
+            vector<double> features = cur_dyn_obst->get_obs_feature(cur_time);
+            DrawObstacle(features, cur_scene);
+        }
+        cv::imshow("Environment display", cur_scene);
         cv::waitKey(refresh_rate);
     }
 
