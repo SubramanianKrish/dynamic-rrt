@@ -30,3 +30,12 @@
 *.exe
 *.out
 *.app
+
+# vscode workspace file - subbu
+dynamicRRT.code-workspace
+
+# compiled folders
+build/
+lib/
+bin/
+.vscode/
