@@ -46,6 +46,7 @@ bool Map::isValidPoint(double x, double y, double curr_step){
     return true;
 }
 
+
 vector<Obstacle*> Map::get_static_obs_vec(){
     std::unique_lock<std::mutex> mtxLoc(mapMutex);
     return static_obs_vec;

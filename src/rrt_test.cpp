@@ -87,7 +87,7 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal, vector<Node*> plan)
 int main(){
     cout << "Testing rrt .." << endl;
     Map *my_map = new Map();
-    Node* start = new Node(10.0, 10.0);
+    Node* start = new Node(5.0, 15.0);
     Node* goal = new Node(20.0, 20.0);
 
     vector<Node*> cur_plan;

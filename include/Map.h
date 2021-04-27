@@ -19,7 +19,7 @@ private:
 
 public:
     Map();
-    bool isValidPoint(double x, double y, double curr_step);
+    bool isValidPoint(double x, double y, double curr_step=0);
 
     vector<Obstacle*> get_static_obs_vec();
     vector<DynamObstacle*> get_dynam_obs_vec();

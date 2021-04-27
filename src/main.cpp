@@ -13,7 +13,6 @@
 #include "viewer.h"
 #include "Map.h"
 #include "Obstacle.h"
-#include "state.h"
 #include "World.h"
 
 using namespace std;
@@ -37,8 +36,9 @@ int main(){
 
     // generate 5 states and close viewer
     for(int i=0; i<5; ++i){
-        auto rand_state = make_shared<State>(random_engine, x_dist, y_dist);
+        // auto rand_state = make_shared<State>(random_engine, x_dist, y_dist);
         // rand_state->print("current random state");
+        cout << "Can do other stuff here" << endl;
         sleep(1);
     }
 
