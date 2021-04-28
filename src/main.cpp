@@ -51,7 +51,7 @@ int main(){
 
     double gx, gy;
     asimov->getGoal(gx, gy);
-    Node* goal = new Node(gx, gy);
+    Node* goal = new Node(100, 100);
     asimov->setDestination(goal);
 
     // send close signal to viewer

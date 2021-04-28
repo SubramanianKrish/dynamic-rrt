@@ -18,7 +18,9 @@ RRT::RRT(Map* map, Node* Start, Node* Goal){
 
     dis = std::uniform_real_distribution<>(1.0, 100.0);
     dis_x = std::uniform_real_distribution<>(0, map->get_x_size());
-    dis_y = std::uniform_real_distribution<>(0, map->get_y_size());    
+    dis_y = std::uniform_real_distribution<>(0, map->get_y_size());
+
+    gen.seed(rd());    
 }
 
 // Add Vertex

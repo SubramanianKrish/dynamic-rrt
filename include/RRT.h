@@ -18,8 +18,8 @@ public:
     Node* Goal;
     vector<Node*> plan;
     
-    // std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen; //Standard mersenne_twister_engine 
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen; //Standard mersenne_twister_engine
     
     std::uniform_real_distribution<> dis;
     std::uniform_real_distribution<> dis_x;
