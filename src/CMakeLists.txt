@@ -32,6 +32,7 @@ add_library(${PROJECT_NAME} STATIC
     ${CMAKE_SOURCE_DIR}/src/Map.cpp
     ${CMAKE_SOURCE_DIR}/src/Node.cpp
     ${CMAKE_SOURCE_DIR}/src/Obstacle.cpp
+    ${CMAKE_SOURCE_DIR}/src/Robot.cpp
     ${CMAKE_SOURCE_DIR}/src/RRT.cpp
     ${CMAKE_SOURCE_DIR}/src/viewer.cpp
     ${CMAKE_SOURCE_DIR}/src/World.cpp
