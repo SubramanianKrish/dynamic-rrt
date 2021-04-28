@@ -10,7 +10,7 @@
 
 using namespace std;
 
-static void RRT_Initial(Map *map, Node* Start, Node* Goal, vector<Node*> plan)
+static void RRT_Initial(Map *map, Node* Start, Node* Goal)
 {
     int number_samples = 10000;
     double E = 1;
@@ -30,7 +30,7 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal, vector<Node*> plan)
     cout << "checkpoint 1: goal and start are okay" << endl;
 
 
-    RRT rrt_initial(map, Start, Goal, plan);
+    RRT rrt_initial(map, Start, Goal);
     cout << "checkpoint 2: created rrt_initial object" << endl;
 
     int start_index = rrt_initial.add_vertex(Start->x, Start->y);
@@ -75,7 +75,7 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal, vector<Node*> plan)
 
     if(goal_reached)
     {
-        rrt_initial.backtrack(plan);
+        rrt_initial.backtrack(rrt_initial.plan);
         cout << "Number of Nodes " << rrt_initial.samples.size() << endl;
     }
     else
@@ -91,5 +91,5 @@ int main(){
     Node* goal = new Node(20.0, 20.0);
 
     vector<Node*> cur_plan;
-    RRT_Initial(my_map, start, goal, cur_plan);
+    RRT_Initial(my_map, start, goal);
 }

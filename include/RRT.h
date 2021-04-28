@@ -25,7 +25,7 @@ public:
     std::uniform_real_distribution<> dis_x;
     std::uniform_real_distribution<> dis_y;
 
-    RRT(Map* map, Node* Start, Node* Goal, vector<Node*> plan);
+    RRT(Map* map, Node* Start, Node* Goal);
 
     // Add Vertex
     int add_vertex(double qnew_x, double qnew_y);
@@ -52,10 +52,13 @@ public:
     bool reached_goal(int index);
 
     // Bactrack
-    void backtrack(vector<Node*> plan);
+    void backtrack(vector<Node*>& plan);
 
     // Rand90
     bool Rand90();
+
+    // Tree <TODO: Add mutex for samples>
+    vector<Node*> getTree();
 
     // Valid Edge for RRT Connect
     // bool valid_edge_connect(double qrand_x, double qrand_y, int qnearID, double &qnew_x, double &qnew_y);

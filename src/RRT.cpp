@@ -11,11 +11,10 @@
 using namespace std;
 
 // Constructors
-RRT::RRT(Map* map, Node* Start, Node* Goal, vector<Node*> plan){
+RRT::RRT(Map* map, Node* Start, Node* Goal){
     this->map = map;
     this->Start = Start;
     this->Goal = Goal;
-    this->plan = plan;
 
     dis = std::uniform_real_distribution<>(1.0, 100.0);
     dis_x = std::uniform_real_distribution<>(0, map->get_x_size());
@@ -39,6 +38,7 @@ int RRT::add_vertex(double qnew_x, double qnew_y)
 void RRT::add_edge(int child, int parent)
 {   
     this->samples[child]->parentID = parent;
+    this->samples[parent]->neighbors.push_back(child);
     return;
 }
 
@@ -129,7 +129,7 @@ bool RRT::reached_goal(int index)
 }
 
 // Backtrack
-void RRT::backtrack(vector<Node*> plan)
+void RRT::backtrack(vector<Node*>& plan)
 {
     int child = this->samples.size() - 1;
     plan.push_back(this->samples[child]);
@@ -151,6 +151,11 @@ bool RRT::Rand90()
         return true;
     }
     return false;
+}
+
+// Tree
+vector<Node*> RRT::getTree(){
+    return samples;
 }
 
 // Valid Edge for RRT Connect

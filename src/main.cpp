@@ -26,7 +26,7 @@ int main(){
     Map* test_map = new Map();
 
     // Make robot
-    Robot* asimov = new Robot(5,5,5,80,20);
+    Robot* asimov = new Robot(70,10, 10, 10, 70, test_map);
 
     // Make the world and bind to a bg thread
     World* test_world = new World(test_map, asimov, 5); // Update world at 200 Hz (5ms delay)

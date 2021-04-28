@@ -3,9 +3,6 @@
 #include <algorithm>
 #include <vector>
 
-// #include "Obstacle.h"
-// #include "Map.h"
-
 using namespace std;
 
 class Node{

@@ -13,12 +13,14 @@ void World::updateTime(){
     system_time += 1;
 }
 
+Map* World::getMap() {return map;}
+
 void World::update(){
     double dest_x, dest_y, robot_x, robot_y;
     double new_robot_x, new_robot_y;
     double robot_vel = robot->getVel();
 
-    while(get_system_time() < 1e5){
+    while(get_system_time() < 1e20){
         
         // increment sytem time
         updateTime();

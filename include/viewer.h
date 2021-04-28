@@ -41,6 +41,7 @@ public:
     void DrawObstacle(vector<double>& features, cv::Mat& scene);
     void DrawRobot(cv::Mat& scene);
     void DrawGoal(cv::Mat& scene);
+    void DrawTree(const vector<Node*>& tree, cv::Mat& scene);
 
     // utils to get, set shared vars
     bool requestViewerClosure();

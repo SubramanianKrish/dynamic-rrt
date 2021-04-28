@@ -36,4 +36,5 @@ public:
 
     // time query
     unsigned long int get_system_time();
+    Map* getMap();
 };

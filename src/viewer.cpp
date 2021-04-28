@@ -48,6 +48,27 @@ void viewer::DrawGoal(cv::Mat& scene){
     circle(scene, cv::Point2f((gx*scale_factor), (map_height - gy)*scale_factor), (int)(0.8*scale_factor), cv::Scalar(0,255,0), CV_FILLED);
 }
 
+void viewer::DrawTree(const vector<Node*>& tree, cv::Mat& scene){
+    // traverse the tree
+    queue<Node*> open;
+    open.push(tree[0]);
+    
+    while(!open.empty()){
+        Node* cur_node = open.front();
+        open.pop();
+
+        for(int n_id: cur_node->neighbors){
+            // draw the line
+            cv::line(scene, cv::Point2f(cur_node->x*scale_factor, (map_height - cur_node->y)*scale_factor), 
+                     cv::Point2f(tree[n_id]->x*scale_factor, (map_height - tree[n_id]->y)*scale_factor),
+                     cv::Scalar(100,100,100), 1, 8, 0);
+
+            // add to queue
+            open.push(tree[n_id]);
+        }
+    }
+}
+
 void viewer::run()
 {   
     cout << "Starting viewer .. " << endl;
@@ -80,6 +101,8 @@ void viewer::run()
             vector<double> features = cur_dyn_obst->get_obs_feature(cur_time);
             DrawObstacle(features, cur_scene);
         }
+
+        DrawTree(robot->getCurrentTree(), cur_scene);
 
         DrawRobot(cur_scene);   // draw the robot
 
