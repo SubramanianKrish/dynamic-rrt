@@ -52,7 +52,7 @@ public:
     bool reached_goal(int index);
 
     // Bactrack
-    void backtrack(vector<Node*>& plan);
+    void backtrack(vector<Node*> plan);
 
     // Rand90
     bool Rand90();
