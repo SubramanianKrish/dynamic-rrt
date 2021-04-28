@@ -129,12 +129,12 @@ bool RRT::reached_goal(int index)
 }
 
 // Backtrack
-void RRT::backtrack(vector<Node*>& plan)
+void RRT::backtrack(vector<Node*> plan)
 {
     int child = this->samples.size() - 1;
     plan.push_back(this->samples[child]);
     int parent = this->samples[child]->parentID;
-    while(!parent == -1)
+    while(parent >= 0)
     {
         child = parent;
         plan.push_back(this->samples[child]);
