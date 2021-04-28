@@ -49,15 +49,17 @@ int main(){
         sleep(1);
     }
 
-    double gx, gy;
-    asimov->getGoal(gx, gy);
-    Node* goal = new Node(100, 100);
-    asimov->setDestination(goal);
+    // double gx, gy;
+    // asimov->getGoal(gx, gy);
+    // Node* goal = new Node(100, 100);
+    // asimov->setDestination(goal);
 
     // send close signal to viewer
     // while(!env_viewer->isViewerClosed())
     //     env_viewer->requestViewerClosure();
-    
+
+    asimov->replan();
+
     // join viewer to main thread
     render_thread.join();
     worldUpdateThread.join();

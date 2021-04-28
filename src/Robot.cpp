@@ -11,7 +11,7 @@ Robot::Robot(double x, double y, double vel, double x_goal, double y_goal, Map* 
     {
         goal = new Node(x_goal, y_goal);
         generatePlan();
-        cout << plan.size() << endl;
+        cout << "generated plan is: " << plan.size() << endl;
     }
 
 bool Robot::getGoal(double& gx, double & gy){
@@ -136,4 +136,43 @@ void Robot::generatePlan()
 
 vector<Node*> Robot::getCurrentTree(){
     return rrt->samples; // <May have to use accessor if private>
+}
+
+bool Robot::robotAtGoal(){
+    std::unique_lock<std::mutex> poseLock(poseMtx);
+    return (x == goal->x and y == goal->y);
+}
+
+bool Robot::robotAtDestination(){
+    if(next_destination == NULL){
+        cout << "Something is off. Checking robot at destination before making a destination" << endl;
+        return false;
+    }
+    std::unique_lock<std::mutex> poseLock(poseMtx);
+    return (x == next_destination->x and y == next_destination->y);
+}
+
+void Robot::replan(){
+    // checks state and updates next destination
+    if(plan.empty()){
+        cout << "ERR: There is no plan to replan with. Exiting replanning .." << endl;
+        return;
+    }
+
+    int cur_step = plan.size();
+    if(next_destination == NULL) // first destination
+        next_destination = plan[cur_step-1];
+
+    while(!robotAtGoal()){
+        if(!robotAtDestination()) continue;
+
+        // replan as robot at destination
+        // WRITE CODE HERE FOR REPLANNING + ALTERNATIVE NEXT DESTINATION UPDATE
+
+
+        --cur_step;
+        if(cur_step >=0) setDestination(plan[cur_step]);
+    }
+
+    cout << "Reached goal!" << endl;
 }

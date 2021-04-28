@@ -52,5 +52,8 @@ public:
     void setRobotPose(const double& x, const double& y);    // world updates robot pose
     void setDestination(Node* dest);                        // planner should update destination
 
+    bool robotAtGoal();
+    bool robotAtDestination();
     void generatePlan();
+    void replan();
 };
