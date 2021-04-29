@@ -44,8 +44,8 @@ int main() {
     vector<DynamObstacle> dynam_obs_vec = test_map.get_dynam_obs_vec();
     DynamObstacle d0 = dynam_obs_vec[0];
     // inspect position at different timesteps
-    double curr_step = 60.0; // TODO: change this value to inspect dynamics obstacle position output
-    vector<double> dynam_feat0 = d0.get_obs_feature(121.0);
+    double curr_step = 61; // TODO: change this value to inspect dynamics obstacle position output
+    vector<double> dynam_feat0 = d0.get_obs_feature(curr_step);
     double dynam_x0 = dynam_feat0[0];
     double dynam_y0 = dynam_feat0[1];
     if (dynam_feat0.size()==3){ // circular obstacle ==> 3 features

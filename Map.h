@@ -12,7 +12,7 @@ private:
     double x_size = 100.0;
     double y_size = 100.0;
     vector<Obstacle> static_obs_vec; // static obstacles
-    vector<DynamObstacle> dynam_obs_vec; // dynamic obstacles 
+    vector<DynamObstacle> dynam_obs_vec; // dynamic obstacles
 
 public:
     Map();
