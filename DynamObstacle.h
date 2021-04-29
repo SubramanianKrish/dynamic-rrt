@@ -46,7 +46,7 @@ public:
     bool isDynamicValid(double x1, double y1, double curr_step, double interp_step);
 
     // check if an edge is collision free with an obstacle interpolation
-    bool isDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step);
+    bool isEdgeDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step);
 
     // compute distance of obstacle center to a lane formed by 2 points
     double dist2Lane(double x1, double y1, double x2, double y2, double curr_step);
