@@ -140,7 +140,7 @@ vector<Node*> Robot::getCurrentTree(){
 
 bool Robot::robotAtGoal(){
     std::unique_lock<std::mutex> poseLock(poseMtx);
-    return (x == goal->x and y == goal->y);
+    return (x == goal->x && y == goal->y);
 }
 
 bool Robot::robotAtDestination(){
@@ -149,7 +149,7 @@ bool Robot::robotAtDestination(){
         return false;
     }
     std::unique_lock<std::mutex> poseLock(poseMtx);
-    return (x == next_destination->x and y == next_destination->y);
+    return (x == next_destination->x && y == next_destination->y);
 }
 
 void Robot::replan(){
