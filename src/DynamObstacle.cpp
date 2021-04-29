@@ -94,6 +94,73 @@ bool DynamObstacle::isStaticValid(double x1, double y1, double curr_step){
     }
 }
 
+bool DynamObstacle::isDynamicValid(double x1, double y1, double curr_step, double interp_step){
+    // check if this obstacle extension is free from collision with a point
+
+    // extract current position
+    pair<double, double> pos_curr = get_position(curr_step);
+    double x_curr = pos_curr.first;
+    double y_curr = pos_curr.second;
+    // compute the next position
+    // 1. compute the unit velocity
+    pair<double, double> pos_delta = get_position(curr_step+1);
+    double x_delta = pos_delta.first;
+    double y_delta = pos_delta.second;
+    double vx = x_delta - x_curr;
+    double vy = y_delta - y_curr;
+    
+    // 2. compute the next position with interpolated unit velocity
+    double x_next = vx * interp_step + x_curr;
+    double y_next = vy * interp_step + y_curr;
+
+    double dist = sqrt((x_next-x_curr)*(x_next-x_curr)+(y_next-y_curr)*(y_next-y_curr));
+    double dist_curr = sqrt((x1-x_curr)*(x1-x_curr)+(y1-y_curr)*(y1-y_curr));
+    double dist_next = sqrt((x1-x_next)*(x1-x_next)+(y1-y_next)*(y1-y_next));
+    if (this->is_circle){ // circle obstacle
+        // point enclosed by either circle
+        if (this->radius>=dist_curr || this->radius>=dist_next){
+            return false;
+        }
+
+        // compute two cosine at two endpoints
+        double cos_gn = (dist_next*dist_next + dist*dist - dist_curr*dist_curr)/(2*dist_next*dist);
+        double cos_gc = (dist_curr*dist_curr + dist*dist - dist_next*dist_next)/(2*dist_curr*dist);
+
+        // if either cos is greater than 90 degree => outside => valid
+        if (cos_gc<=0 || cos_gn<=0){
+            return true;
+        }
+
+        // the point is in between of the two endpoints, check vertical distance
+        double sin_gc = sqrt(1.0 - cos_gc*cos_gc);
+        double dist_vert = dist_curr * sin_gc;
+        if (this->radius>=dist_vert){
+            return false;
+        }
+
+        return true;
+    }else{ 
+        cout << "FAILED COLLISION CHECKING: Not Implemented Rectangular Dynamics Obstacle" << endl;
+    }
+}
+
+bool DynamObstacle::isEdgeDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step){
+    // inputs note: two endpoints of the edge (x1, y1), (x2, y2)
+    // separately check 10 points in the middle
+
+    // directional gradient
+    double dx = (x2-x1) / 10;
+    double dy = (y2-y1) / 10;
+
+    // sequentially check each point
+    for (int i=0; i<=10; ++i){
+        if (!isDynamicValid(x1+dx*i, y1+dy*i, curr_step, interp_step)){
+            return false;
+        }
+    }
+    return true;
+}
+
 double DynamObstacle::dist2Lane(double x1, double y1, double x2, double y2, double curr_step){
     // compute coeff for lane segment Ax+By+C=0
     double A = y1 - y2;

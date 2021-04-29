@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -40,6 +41,12 @@ public:
 
     // check if a point is collision free with this obstacle
     bool isStaticValid(double x1, double y1, double curr_step);
+
+    // check if a point is collision free with an obstacle interpolation
+    bool isDynamicValid(double x1, double y1, double curr_step, double interp_step);
+
+    // check if an edge is collision free with an obstacle interpolation
+    bool isEdgeDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step);
 
     // compute distance of obstacle center to a lane formed by 2 points
     double dist2Lane(double x1, double y1, double x2, double y2, double curr_step);
