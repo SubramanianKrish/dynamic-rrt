@@ -144,7 +144,7 @@ bool DynamObstacle::isDynamicValid(double x1, double y1, double curr_step, doubl
     }
 }
 
-bool DynamObstacle::isDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step){
+bool DynamObstacle::isEdgeDynamicValid(double x1, double y1, double x2, double y2, double curr_step, double interp_step){
     // inputs note: two endpoints of the edge (x1, y1), (x2, y2)
     // separately check 10 points in the middle
 
