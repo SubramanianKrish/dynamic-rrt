@@ -27,7 +27,7 @@ void World::update(){
          
         // Move robot if robot not at destination pose - simple position control const vel
         robot->getRobotPose(robot_x, robot_y); 
-        if(robot->getDestination(dest_x, dest_y) and (robot_x != dest_x or robot_y != dest_y)) // if destination exists
+        if(robot->getDestination(dest_x, dest_y) && (robot_x != dest_x || robot_y != dest_y)) // if destination exists
         {
             // update robot position
             double vdt = robot_vel*updateRatems/1000;
