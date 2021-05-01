@@ -83,10 +83,10 @@ bool DynamObstacle::isStaticValid(double x1, double y1, double curr_step){
         double A = tan(this->theta);
         double B = -1;
         double C = y_curr - x_curr * tan(this->theta);
-        double dist1 = abs(A*x_curr + B*y_curr + C) / sqrt(A*A + B*B);
+        double dist1 = abs(A*x1 + B*y1 + C) / sqrt(A*A + B*B);
         double dist2 = sqrt(dist*dist - dist1*dist1);
 
-        if (dist1>this->length/2 || dist2>this->width/2){
+        if (dist1>this->width/2 || dist2>this->length/2){
             return true;
         }else{
             return false;
