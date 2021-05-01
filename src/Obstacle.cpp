@@ -61,10 +61,10 @@ bool Obstacle::isStaticValid(double x1, double y1){
         double A = tan(this->theta);
         double B = -1;
         double C = this->y - this->x * tan(this->theta);
-        double dist1 = abs(A*this->x + B*this->y + C) / sqrt(A*A + B*B);
+        double dist1 = abs(A*x1 + B*y1 + C) / sqrt(A*A + B*B);
         double dist2 = sqrt(dist*dist - dist1*dist1);
 
-        if (dist1>this->length/2 || dist2>this->width/2){
+        if (dist1>this->width/2 || dist2>this->length/2){
             return true;
         }else{
             return false;
