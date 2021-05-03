@@ -24,11 +24,12 @@ void World::update(){
         
         // increment sytem time
         updateTime();
-         
+        //cout << "Trying World" << endl;
         // Move robot if robot not at destination pose - simple position control const vel
         robot->getRobotPose(robot_x, robot_y); 
         if(robot->getDestination(dest_x, dest_y) && (robot_x != dest_x || robot_y != dest_y)) // if destination exists
-        {
+        {   
+            //cout << "Entered if Statement" << endl;
             // update robot position
             double vdt = robot_vel*updateRatems/1000;
             double dist = sqrt(pow(dest_x - robot_x, 2) + pow(dest_y - robot_y, 2));
@@ -43,6 +44,7 @@ void World::update(){
             }
             
             robot->setRobotPose(new_robot_x, new_robot_y);
+            //cout << new_robot_x << " " << new_robot_y<< endl;
         }
 
         std::this_thread::sleep_for(std::chrono::milliseconds(updateRatems)); // sleep

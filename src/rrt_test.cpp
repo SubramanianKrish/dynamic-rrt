@@ -83,7 +83,85 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal)
         cout << "No Path Found" << endl;
     }
 }
+/*
+static void RRT_Star_Initial(Map *map, Node* Start, Node* Goal)
+{   
+    // Node* Start = new Node(x, y);
 
+    int number_samples = 10000;
+    double E = 1;
+    double gamma = 6000;
+
+    if(!map->isValidPoint(Start->x, Start->y))
+    {
+        cout<<"Invalid Start Position" << endl;
+        return;
+    }
+    if(!map->isValidPoint(Goal->x, Goal->y))
+    {
+        cout<<"Invalid Goal Position" << endl;
+        return;
+    }
+
+    double qrand_x, qrand_y;
+    cout << "checkpoint 1: goal and start are okay" << endl;
+
+
+    RRT rrt_star_initial(map, Start, Goal);
+    cout << "checkpoint 2: created rrt_initial object" << endl;
+
+    int start_index = rrt_star_initial.add_vertex(Start->x, Start->y);
+    rr_star_initial.samples[start_index]->g = 0;
+    rrt_star_initial.samples[start_index]->parentID = -1;
+
+    bool goal_sample = false;
+    bool goal_reached = false;
+
+    for(int i = 0; i < number_samples; i++)
+    {
+        cout << "inside sample generator loop" << endl;
+        if(rrt_star_initial.Rand90())
+        {
+            do
+            {
+                cout << "trying to create a random sample inside rand90 block" << endl;
+                rrt_star_initial.random_sample(&qrand_x, &qrand_y);
+            }while(!map->isValidPoint(qrand_x, qrand_y));
+        }
+        else
+        {
+            cout << "trying to sample goal inside else block" << endl;
+            goal_sample = true;
+            rrt_star_initial.goal_sample(&qrand_x, &qrand_y);
+        }
+        cout << "checkpoint 3: Sample Created" << endl;
+
+        rrt_star_initial.extend_rewire(qrand_x, qrand_y, E, gamma);
+
+        if(goal_sample)
+        {
+            goal_sample = false;
+            goal_reached = rrt_star_initial.reached_goal(rrt_star_initial.samples.size() - 1);
+        }
+
+        if(goal_reached)
+        {
+            cout << "Path Found" << endl;
+            break;
+        }
+    }
+
+    if(goal_reached)
+    {
+        rrt_star_initial.backtrack(plan);
+        cout << "Number of Nodes " << rrt_star_initial.samples.size() << endl;
+    }
+    else
+    {
+        cout << "No Path Found" << endl;
+    }
+}
+*/
 int main(){
     cout << "Testing rrt .." << endl;
     Map *my_map = new Map();

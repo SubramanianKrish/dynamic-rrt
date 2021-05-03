@@ -3,7 +3,7 @@
 using namespace std;
 
 viewer::viewer(Map* ptrMap, World* ptrWorld, Robot* ptrRobot)
-    : map(ptrMap), closeViewer(false), refresh_rate(25), robot(ptrRobot),
+    : map(ptrMap), closeViewer(false), refresh_rate(10), robot(ptrRobot),
       world(ptrWorld) // refresh at 40Hz
 {
     map_width = map->get_x_size();

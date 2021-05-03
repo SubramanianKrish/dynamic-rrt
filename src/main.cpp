@@ -8,7 +8,8 @@
 #include <thread>
 #include <string>
 #include <memory>
-#include <unistd.h>
+//#include <unistd.h>
+#include <Windows.h>
 
 #include "viewer.h"
 #include "Map.h"
@@ -26,7 +27,7 @@ int main(){
     Map* test_map = new Map();
 
     // Make robot
-    Robot* asimov = new Robot(70,10, 10, 10, 70, test_map);
+    Robot* asimov = new Robot(80, 80, 10, 10, 70, test_map);
 
     // Make the world and bind to a bg thread
     World* test_world = new World(test_map, asimov, 5); // Update world at 200 Hz (5ms delay)
@@ -44,19 +45,23 @@ int main(){
     std::mt19937 random_engine;
 
     // generate 5 states and close viewer
+    
     for(int i=0; i<5; ++i){
         cout << "Do whatever" << endl;
-        sleep(1);
+        //sleep(1);
+        Sleep(1000);
     }
-
-    // double gx, gy;
-    // asimov->getGoal(gx, gy);
-    // Node* goal = new Node(100, 100);
-    // asimov->setDestination(goal);
+    
+    /*
+     double gx, gy;
+     asimov->getGoal(gx, gy);
+     Node* goal = new Node(100, 100);
+     asimov->setDestination(goal);
 
     // send close signal to viewer
-    // while(!env_viewer->isViewerClosed())
-    //     env_viewer->requestViewerClosure();
+     while(!env_viewer->isViewerClosed())
+       env_viewer->requestViewerClosure();
+    */
 
     asimov->replan();
 
