@@ -57,5 +57,5 @@ public:
     void generatePlan();
     void replan();
     void generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_zone, vector<Node*> replan_plan, unsigned long int cur_time, double time_hor)
-    bool isValidDynamic(double radius_zone, double qrand_x, double qrand_y, unsigned long int cur_time, double time_hor);
+    bool isValidDynamic(double replan_start_x, double replan_start_y, double radius_zone, double qrand_x, double qrand_y, unsigned long int cur_time, double time_hor);
 };
