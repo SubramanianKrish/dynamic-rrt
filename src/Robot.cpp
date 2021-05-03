@@ -154,11 +154,14 @@ bool Robot::robotAtDestination(){
     return (x == next_destination->x && y == next_destination->y);
 }
 
-bool isValidDynamic(double replan_start_x, double replan_start_y, double radius_zone, double qrand_x, double qrand_y, unsigned long int cur_time, double time_hor) {
+bool Robot::isValidDynamic(double replan_start_x, double replan_start_y, double radius_zone, double qrand_x, double qrand_y, unsigned long int cur_time, double time_hor) {
+    //Check whether sample is within radius
+    /*
     if (sqrt(pow(replan_start_x - qrand_x, 2) + pow(replan_start_y - qrand_y, 2)) > radius_zone) {
         return false;
         //cout << "Outside Radius " << endl;
     }
+    */
     if (!map->isValidPoint(qrand_x, qrand_y)) {
         return false;
         //cout << "Colliding with Static Obstacle " << endl;
@@ -194,7 +197,7 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
     // cout << "checkpoint 1: goal and start are okay" << endl;
 
 
-    rrt_replan = new RRT(map, Replan_Start, Replan_Goal);
+    RRT* rrt_replan = new RRT(map, Replan_Start, Replan_Goal);
     // cout << "checkpoint 2: created rrt_initial object" << endl;
 
     int start_index = rrt_replan->add_vertex(Replan_Start->x, Replan_Start->y);
@@ -301,7 +304,7 @@ void Robot::replan(){
         // Replan if not valid
 
         // Check Collision
-        //unsigned long int cur_time = world->get_system_time();
+        //unsigned long int cur_time = world->get_system_time(); // Fix world->get_system_time()
         unsigned long int cur_time = 0;
         //cout << cur_time << endl;
         double dist_trav = 0;
