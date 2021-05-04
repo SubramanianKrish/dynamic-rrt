@@ -25,6 +25,7 @@ private:
     Node* next_destination; // goal buffer
     Node* goal;             // goal node
     Node* robot_node;       // current node at which robot is present
+    Node* local_goal;       // replanner goal
 
     double E;
 
@@ -53,6 +54,7 @@ public:
     vector<Node*> getLocalTree();
     vector<Node*> getPlan();
     Node* getRobotNode();
+    Node* getReplanGoal();
 
     // Setters
     void setWorld(World* world);                            // main links robot to world

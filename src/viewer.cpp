@@ -117,6 +117,10 @@ void viewer::run()
 
         DrawPlan(robot->getPlan(), cur_scene);
 
+        // draw replan goal
+        Node* replan_goal = robot->getReplanGoal();
+        if(replan_goal) circle(cur_scene, cv::Point2f((replan_goal->x*scale_factor), (map_height - replan_goal->y)*scale_factor), (int)(0.8*scale_factor), cv::Scalar(100,100,0), CV_FILLED);
+
         DrawRobot(cur_scene);   // draw the robot
 
         cv::imshow("Environment display", cur_scene);
