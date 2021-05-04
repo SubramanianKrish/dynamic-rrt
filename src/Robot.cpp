@@ -371,6 +371,8 @@ void Robot::replan(){
                     return;
                 }
         }
+        // Replan Goal Index in original plan = cur_idx + 1
+        // Size of original plan that is important will be cur_idx + 2
         
         if (obs_blocking)
         {
@@ -380,6 +382,14 @@ void Robot::replan(){
             generateReplan(replan_start, replan_goal, dist_des, replan_plan, cur_time, time_hor);
             // cout << "After replanning " << replan_plan.size() << endl;
             if(replan_plan.size() == 0) break;
+            
+            while (plan.size() > cur_idx + 2) {
+                plan.pop_back();
+            }
+            for (int i = 1; i < replan_plan.size(); i++) {
+                plan.push_back(replan_plan[i]);
+            }
+            cur_step = plan.size() - 1;
         }
         
         // */
