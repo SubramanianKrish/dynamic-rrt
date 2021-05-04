@@ -8,8 +8,8 @@
 #include <thread>
 #include <string>
 #include <memory>
-//#include <unistd.h>
-#include <Windows.h>
+#include <unistd.h>
+// #include <Windows.h>
 
 #include "viewer.h"
 #include "Map.h"
@@ -27,7 +27,7 @@ int main(){
     Map* test_map = new Map();
 
     // Make robot
-    Robot* asimov = new Robot(80, 80, 10, 10, 70, test_map);
+    Robot* asimov = new Robot(50, 30, 10, 50, 70, test_map);
 
     // Make the world and bind to a bg thread
     World* test_world = new World(test_map, asimov, 5); // Update world at 200 Hz (5ms delay)
@@ -49,7 +49,7 @@ int main(){
     for(int i=0; i<5; ++i){
         cout << "Do whatever" << endl;
         //sleep(1);
-        Sleep(1000);
+        sleep(1);
     }
     
     /*

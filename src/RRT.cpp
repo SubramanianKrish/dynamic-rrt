@@ -79,7 +79,7 @@ int RRT::nearest_neighbor(double qrand_x, double qrand_y)
 }
 
 // Valid Edge
-bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x, double* qnew_y, double E)
+bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x, double* qnew_y, double E, double cur_time)
 {   
     double qnear_x = this->samples[qnearID]->x;
     double qnear_y = this->samples[qnearID]->y;
@@ -90,7 +90,7 @@ bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x
     {
         *qnew_x = qnear_x + (min_step * (i + 1) * (qrand_x - qnear_x) / dist);
         *qnew_y = qnear_y + (min_step * (i + 1) * (qrand_y - qnear_y) / dist);
-        if(!this->map->isValidPoint(*qnew_x, *qnew_y))
+        if(!this->map->isValidPoint(*qnew_x, *qnew_y, cur_time))
         {
             //cout << "No Valid Edge" << endl;
             return false;
@@ -109,11 +109,11 @@ bool RRT::valid_edge(double qrand_x, double qrand_y, int qnearID, double* qnew_x
 }
 
 // Extend
-void RRT::extend(double qrand_x, double qrand_y, double E)
+void RRT::extend(double qrand_x, double qrand_y, double E, double cur_time)
 {   
     double qnew_x, qnew_y;
     int qnearID = nearest_neighbor(qrand_x, qrand_y);
-    bool status = valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E);
+    bool status = valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E, cur_time);
     if(status)
     {
         int childID = add_vertex(qnew_x, qnew_y);

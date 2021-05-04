@@ -15,12 +15,12 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal)
     int number_samples = 10000;
     double E = 1;
 
-    if(!map->isValidPoint(Start->x, Start->y))
+    if(!map->isValidPoint(Start->x, Start->y, 0))
     {
         cout<<"Invalid Start Position" << endl;
         return;
     }
-    if(!map->isValidPoint(Goal->x, Goal->y))
+    if(!map->isValidPoint(Goal->x, Goal->y, 0))
     {
         cout<<"Invalid Goal Position" << endl;
         return;
@@ -48,7 +48,7 @@ static void RRT_Initial(Map *map, Node* Start, Node* Goal)
             {
                 cout << "trying to create a random sample inside rand90 block" << endl;
                 rrt_initial.random_sample(&qrand_x, &qrand_y);
-            }while(!map->isValidPoint(qrand_x, qrand_y));
+            }while(!map->isValidPoint(qrand_x, qrand_y, 0));
         }
         else
         {

@@ -43,10 +43,10 @@ public:
     int nearest_neighbor(double qrand_x, double qrand_y);
 
     // Valid Edge
-    bool valid_edge(double qrand_x, double qrand_y, int qnearID, double *qnew_x, double *qnew_y, double E);
+    bool valid_edge(double qrand_x, double qrand_y, int qnearID, double *qnew_x, double *qnew_y, double E, double cur_time);
 
     // Extend
-    void extend(double qrand_x, double qrand_y, double E);
+    void extend(double qrand_x, double qrand_y, double E, double cur_time);
 
     // Reached Goal
     bool reached_goal(int index);

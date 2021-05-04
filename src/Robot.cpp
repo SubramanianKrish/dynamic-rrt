@@ -1,4 +1,5 @@
 #include "Robot.h"
+#include "World.h"
 
 Robot::Robot()
     : x(0), y(0), vel(0), next_destination(NULL), goal(NULL), world(NULL) {}
@@ -67,12 +68,12 @@ void Robot::generatePlan()
     int number_samples = 10000;
     double E = 1;
 
-    if(!map->isValidPoint(Start->x, Start->y))
+    if(!map->isValidPoint(Start->x, Start->y, 0))
     {
         cout<<"Invalid Start Position" << endl;
         return;
     }
-    if(!map->isValidPoint(goal->x, goal->y))
+    if(!map->isValidPoint(goal->x, goal->y, 0))
     {
         cout<<"Invalid Goal Position" << endl;
         return;
@@ -100,7 +101,7 @@ void Robot::generatePlan()
             {
                 // cout << "trying to create a random sample inside rand90 block" << endl;
                 rrt->random_sample(&qrand_x, &qrand_y);
-            }while(!map->isValidPoint(qrand_x, qrand_y));
+            }while(!map->isValidPoint(qrand_x, qrand_y, 0));
         }
         else
         {
@@ -110,7 +111,7 @@ void Robot::generatePlan()
         }
         // cout << "checkpoint 3: Sample Created" << endl;
 
-        rrt->extend(qrand_x, qrand_y, E);
+        rrt->extend(qrand_x, qrand_y, E, 0);
 
         if(goal_sample)
         {
@@ -162,7 +163,7 @@ bool Robot::isValidDynamic(double replan_start_x, double replan_start_y, double 
         //cout << "Outside Radius " << endl;
     }
     */
-    if (!map->isValidPoint(qrand_x, qrand_y)) {
+    if (!map->isValidPoint(qrand_x, qrand_y, cur_time)) {
         return false;
         //cout << "Colliding with Static Obstacle " << endl;
     }
@@ -182,6 +183,8 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
     int number_samples = 1000;
     double E = 1;
 
+    cout << "Asked to reach thics goal: " << Replan_Goal->x << " " << Replan_Goal->y << endl;
+
     if (!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Start->x, Replan_Start->y, cur_time, time_hor))
     {
         cout << "Invalid Start Position" << endl;
@@ -190,7 +193,8 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
     if (!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Goal->x, Replan_Goal->y, cur_time, time_hor))
     {
         cout << "Invalid Goal Position" << endl;
-        return;
+        Replan_Goal = goal;
+        // return;
     }
 
     double qrand_x, qrand_y;
@@ -230,7 +234,7 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
 
         int qnearID = rrt_replan->nearest_neighbor(qrand_x, qrand_y);
         //Check if edge is valid against static obstacles
-        bool status = rrt_replan->valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E); 
+        bool status = rrt_replan->valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E, cur_time); 
         
         //Check if edge is valid against dynamic obstacles
         vector<DynamObstacle*> dynamic_obs = map->get_dynam_obs_vec();
@@ -238,9 +242,10 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         {
             if (!dyn_obst->isEdgeDynamicValid(rrt_replan->samples[qnearID]->x, rrt_replan->samples[qnearID]->y, qnew_x, qnew_y, cur_time, time_hor))
             {
-                cout << "Collision Detected " << endl;
+                // cout << "Collision Detected inside replan " << endl;
                 status = false;
-                return;
+                --i;
+                break;
             }
             status = true;
         }
@@ -263,6 +268,8 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
             cout << "Path Found" << endl;
             break;
         }
+
+        if(i == 10) break;
     }
 
     if (goal_reached)
@@ -274,6 +281,10 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
     {
         cout << "No Path Found" << endl;
     }
+
+    cout << "Tried to reach this goal: " << Replan_Goal->x << " " << Replan_Goal->y << endl;
+    cout << "Robot goal : " << goal->x << " " << goal->y << endl;
+    local_tree = rrt_replan->samples;
 }
 
 void Robot::replan(){
@@ -283,33 +294,38 @@ void Robot::replan(){
         return;
     }
 
-    int cur_step = plan.size();
+    int cur_step = plan.size()-1;
     if (next_destination == NULL) // first destination
     {
-        next_destination = plan[cur_step-1];
+        next_destination = plan[cur_step];
      //   cout << "1st Destination Created " << endl;
     }
-    
+
     // Variables
     double time_hor = 1;
     double vel = getVel();
     double dist_des = time_hor * vel;
     vector<DynamObstacle*> dynamic_obs = map->get_dynam_obs_vec();
+    cout << "Cur step outside the loop: " << cur_step << endl;
+    
     
     while(!robotAtGoal()){
         if(!robotAtDestination()) continue;
+        
         // replan as robot at destination
         // WRITE CODE HERE FOR REPLANNING + ALTERNATIVE NEXT DESTINATION UPDATE
         // Check whether edge is valid (Zhaoyuan)
         // Replan if not valid
 
-        // Check Collision
-        //unsigned long int cur_time = world->get_system_time(); // Fix world->get_system_time()
-        unsigned long int cur_time = 0;
-        //cout << cur_time << endl;
+        // Check Collision <test further on some specific cases - smaller env/dyn obs moving sides>
+        // /*
+        unsigned long int cur_time = world->get_system_time(); // Fix world->get_system_time()
+        
         double dist_trav = 0;
         bool obs_blocking = false;
         int cur_idx = cur_step;
+
+        bool first_edge = true;
         while (dist_trav < dist_des)
         {   
             if (plan[cur_idx]->x == goal->x && plan[cur_idx]->y == goal->y)
@@ -319,11 +335,16 @@ void Robot::replan(){
             }
             int next_idx = cur_idx - 1;
             dist_trav += sqrt(pow(plan[cur_idx]->x - plan[next_idx]->x, 2) + pow(plan[cur_idx]->y - plan[next_idx]->y, 2));
+            
+
             for (auto& dyn_obst : dynamic_obs)
             {
                 if (!dyn_obst->isEdgeDynamicValid(plan[cur_idx]->x, plan[cur_idx]->y, plan[next_idx]->x, plan[next_idx]->y, cur_time, time_hor))
                 {   
-                    cout << "Collision Detected " << endl;
+                    if(first_edge){
+                        cout << "Collision Detected in valid edge dynamic check blok" << endl;
+                        first_edge = false;
+                    }
                     obs_blocking = true;
                 }
             }
@@ -334,15 +355,26 @@ void Robot::replan(){
         
         // Replan RRT
         vector<Node*> replan_plan;
+        
         if (obs_blocking)
         {
+            cout << "Before replanning " << replan_plan.size() << endl;
             Node* replan_start = plan[cur_step];
             Node* replan_goal = plan[cur_idx];
+
+            cout << "Start index in orignal tree: " << plan[cur_step]->ID << " Target index in OG tree: " << plan[cur_idx]->ID << endl;            
             generateReplan(replan_start, replan_goal, dist_des, replan_plan, cur_time, time_hor);
+            cout << "After replanning " << replan_plan.size() << endl;
+            if(replan_plan.size() == 0) break;
         }
+        // */
         --cur_step;
         if(cur_step >=0) setDestination(plan[cur_step]);
     }
 
     cout << "Reached goal!" << endl;
+}
+
+vector<Node*> Robot::getLocalTree(){
+    return local_tree;
 }

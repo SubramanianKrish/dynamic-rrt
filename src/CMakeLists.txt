@@ -37,7 +37,7 @@ add_library(${PROJECT_NAME} STATIC
     ${CMAKE_SOURCE_DIR}/src/viewer.cpp
     ${CMAKE_SOURCE_DIR}/src/World.cpp
 
-    ${CMAKE_SOURCE_DIR}/src/rrt_test.cpp
+    # ${CMAKE_SOURCE_DIR}/src/rrt_test.cpp
     ${CMAKE_SOURCE_DIR}/src/main.cpp
     )
     
@@ -52,5 +52,5 @@ add_executable(main ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 target_link_libraries(main PUBLIC ${PROJECT_NAME})
 
 # Add unit_test executables
-add_executable(tree ${CMAKE_CURRENT_SOURCE_DIR}/rrt_test.cpp)
-target_link_libraries(tree PUBLIC ${PROJECT_NAME})
+# add_executable(tree ${CMAKE_CURRENT_SOURCE_DIR}/rrt_test.cpp)
+# target_link_libraries(tree PUBLIC ${PROJECT_NAME})

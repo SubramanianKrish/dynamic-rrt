@@ -49,6 +49,8 @@ void viewer::DrawGoal(cv::Mat& scene){
 }
 
 void viewer::DrawTree(const vector<Node*>& tree, cv::Mat& scene){
+    if(tree.empty()) return;
+
     // traverse the tree
     queue<Node*> open;
     open.push(tree[0]);
@@ -103,6 +105,7 @@ void viewer::run()
         }
 
         DrawTree(robot->getCurrentTree(), cur_scene);
+        DrawTree(robot->getLocalTree(), cur_scene);
 
         DrawRobot(cur_scene);   // draw the robot
 
