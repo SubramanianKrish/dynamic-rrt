@@ -24,6 +24,8 @@ private:
     const double vel;       // in m/s
     Node* next_destination; // goal buffer
     Node* goal;             // goal node
+    Node* robot_node;       // current node at which robot is present
+
     double E;
 
     World* world;   // handle to the world
@@ -49,6 +51,8 @@ public:
     double getVel();
     vector<Node*> getCurrentTree();
     vector<Node*> getLocalTree();
+    vector<Node*> getPlan();
+    Node* getRobotNode();
 
     // Setters
     void setWorld(World* world);                            // main links robot to world

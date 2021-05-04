@@ -3,21 +3,21 @@ using namespace std;
 
 Map::Map(){
     // Static Obstacles
-    // Obstacle* b0 = new Obstacle(0, true, 50, 10, 10, 20, 0); // sitting at the center of lower wall
-    // Obstacle* b1 = new Obstacle(1, true, 50, 80, 20, 40, 0); // hanging from the center of upper wall
-    // Obstacle* b2 = new Obstacle(2, true, 10, 50, 20, 20, 0); // hanging from the center of left wall
+    Obstacle* b0 = new Obstacle(0, true, 50, 10, 10, 20, 0); // sitting at the center of lower wall
+    Obstacle* b1 = new Obstacle(1, true, 50, 80, 20, 40, 0); // hanging from the center of upper wall
+    Obstacle* b2 = new Obstacle(2, true, 10, 50, 20, 20, 0); // hanging from the center of left wall
 
     std::unique_lock<std::mutex> mtxLoc(mapMutex);
-    // static_obs_vec.push_back(b0);
-    // static_obs_vec.push_back(b1);
-    // static_obs_vec.push_back(b2);
+    static_obs_vec.push_back(b0);
+    static_obs_vec.push_back(b1);
+    static_obs_vec.push_back(b2);
 
     // Dynamic Obsracles
     DynamObstacle* d0 = new DynamObstacle(0, false, 30, 50, 5, 70, 50, 2000);
-    // DynamObstacle* d1 = new DynamObstacle(1, false, 40, 50, 3, 10, 90, 3000);
+    DynamObstacle* d1 = new DynamObstacle(1, false, 40, 50, 3, 10, 90, 3000);
 
     dynam_obs_vec.push_back(d0);
-    // dynam_obs_vec.push_back(d1);
+    dynam_obs_vec.push_back(d1);
 
 }
 

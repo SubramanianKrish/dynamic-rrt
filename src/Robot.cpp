@@ -8,10 +8,13 @@ Robot::Robot(double x, double y, double vel)
     : x(x), y(y), vel(vel), next_destination(NULL), goal(NULL), world(NULL) {}
 
 Robot::Robot(double x, double y, double vel, double x_goal, double y_goal, Map* ptrMap)
-    : x(x), y(y), vel(vel), next_destination(NULL), world(NULL), map(ptrMap), E(2) 
+    : x(x), y(y), vel(vel), next_destination(NULL), world(NULL), map(ptrMap), E(2),
+      robot_node(NULL)
     {
         goal = new Node(x_goal, y_goal);
         generatePlan();
+        robot_node = plan.back();
+        cout << "start has this many nbrs: " << robot_node->ptrNeighbors.size() << endl;
         cout << "generated plan is: " << plan.size() << endl;
     }
 
@@ -310,6 +313,8 @@ void Robot::replan(){
     
     while(!robotAtGoal()){
         if(!robotAtDestination()) continue;
+        // update robot node
+        robot_node = next_destination;
         
         // replan as robot at destination
         // WRITE CODE HERE FOR REPLANNING + ALTERNATIVE NEXT DESTINATION UPDATE
@@ -404,3 +409,9 @@ void Robot::replan(){
 vector<Node*> Robot::getLocalTree(){
     return local_tree;
 }
+
+vector<Node*> Robot::getPlan(){
+    return plan;
+}
+
+Node* Robot::getRobotNode(){ return robot_node; }

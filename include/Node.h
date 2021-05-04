@@ -10,6 +10,7 @@ public:
     double x, y; // Position of Node
     int ID, parentID; // Own ID, Parent ID
     vector<int> neighbors; // ID of Neighbors for RRT*
+    vector<Node*> ptrNeighbors; // for implicit tree traversal for the viewer
     double g; // gvalue of Node for RRT*
 
     // Constructors

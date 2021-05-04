@@ -41,6 +41,8 @@ void RRT::add_edge(int child, int parent)
 {   
     this->samples[child]->parentID = parent;
     this->samples[parent]->neighbors.push_back(child);
+    this->samples[parent]->ptrNeighbors.push_back(this->samples[child]);
+    
     return;
 }
 

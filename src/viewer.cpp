@@ -48,26 +48,34 @@ void viewer::DrawGoal(cv::Mat& scene){
     circle(scene, cv::Point2f((gx*scale_factor), (map_height - gy)*scale_factor), (int)(0.8*scale_factor), cv::Scalar(0,255,0), CV_FILLED);
 }
 
-void viewer::DrawTree(const vector<Node*>& tree, cv::Mat& scene){
-    if(tree.empty()) return;
+void viewer::DrawTree(Node* root, cv::Mat& scene){
+    if(root == NULL) return;
 
     // traverse the tree
     queue<Node*> open;
-    open.push(tree[0]);
+    open.push(root);
     
     while(!open.empty()){
         Node* cur_node = open.front();
         open.pop();
 
-        for(int n_id: cur_node->neighbors){
+        for(auto& ptrNbr: cur_node->ptrNeighbors){
             // draw the line
             cv::line(scene, cv::Point2f(cur_node->x*scale_factor, (map_height - cur_node->y)*scale_factor), 
-                     cv::Point2f(tree[n_id]->x*scale_factor, (map_height - tree[n_id]->y)*scale_factor),
+                     cv::Point2f(ptrNbr->x*scale_factor, (map_height - ptrNbr->y)*scale_factor),
                      cv::Scalar(100,100,100), 1, 8, 0);
 
             // add to queue
-            open.push(tree[n_id]);
+            open.push(ptrNbr);
         }
+    }
+}
+
+void viewer::DrawPlan(const vector<Node*>& plan, cv::Mat& scene){
+    for(int i=0; i < plan.size()-1; ++i){
+        cv::line(scene, cv::Point2f(plan[i]->x*scale_factor, (map_height - plan[i]->y)*scale_factor), 
+                     cv::Point2f(plan[i+1]->x*scale_factor, (map_height - plan[i+1]->y)*scale_factor),
+                     cv::Scalar(0,0,255), 1, 8, 0);
     }
 }
 
@@ -104,8 +112,10 @@ void viewer::run()
             DrawObstacle(features, cur_scene);
         }
 
-        DrawTree(robot->getCurrentTree(), cur_scene);
-        DrawTree(robot->getLocalTree(), cur_scene);
+        Node* cur_robot_node = robot->getRobotNode();
+        DrawTree(cur_robot_node, cur_scene);
+
+        DrawPlan(robot->getPlan(), cur_scene);
 
         DrawRobot(cur_scene);   // draw the robot
 
