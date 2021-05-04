@@ -145,6 +145,8 @@ void RRT::backtrack(vector<Node*>& plan)
         plan.push_back(this->samples[child]);
         parent = this->samples[child]->parentID;
     }
+
+    cout << "Inside backtrack: " << plan.size() << endl;
     return;
 }
 

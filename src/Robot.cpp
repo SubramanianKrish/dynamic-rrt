@@ -8,7 +8,7 @@ Robot::Robot(double x, double y, double vel)
     : x(x), y(y), vel(vel), next_destination(NULL), goal(NULL), world(NULL) {}
 
 Robot::Robot(double x, double y, double vel, double x_goal, double y_goal, Map* ptrMap)
-    : x(x), y(y), vel(vel), next_destination(NULL), world(NULL), map(ptrMap) 
+    : x(x), y(y), vel(vel), next_destination(NULL), world(NULL), map(ptrMap), E(2) 
     {
         goal = new Node(x_goal, y_goal);
         generatePlan();
@@ -66,7 +66,7 @@ void Robot::generatePlan()
     Node* Start = new Node(x, y);
 
     int number_samples = 10000;
-    double E = 1;
+    
 
     if(!map->isValidPoint(Start->x, Start->y, 0))
     {
@@ -179,11 +179,11 @@ bool Robot::isValidDynamic(double replan_start_x, double replan_start_y, double 
     return true;
 }
 
-void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_zone, vector<Node*> replan_plan, unsigned long int cur_time, double time_hor) {
+void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_zone, vector<Node*>& replan_plan, unsigned long int cur_time, double time_hor) {
     int number_samples = 1000;
-    double E = 1;
+    // double E = 5;
 
-    cout << "Asked to reach thics goal: " << Replan_Goal->x << " " << Replan_Goal->y << endl;
+    cout << "Asked to reach this goal: " << Replan_Goal->x << " " << Replan_Goal->y << endl;
 
     if (!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Start->x, Replan_Start->y, cur_time, time_hor))
     {
@@ -193,8 +193,8 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
     if (!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Goal->x, Replan_Goal->y, cur_time, time_hor))
     {
         cout << "Invalid Goal Position" << endl;
-        Replan_Goal = goal;
-        // return;
+        // Replan_Goal = goal;
+        return;
     }
 
     double qrand_x, qrand_y;
@@ -215,15 +215,15 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         // cout << "inside sample generator loop" << endl;
         if (rrt_replan->Rand90())
         {
-            do
+            // do
             {
-                // cout << "trying to create a random sample inside rand90 block" << endl;
-                rrt_replan->random_sample(&qrand_x, &qrand_y);
-            } while (isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, qrand_x, qrand_y, cur_time, time_hor));
+                // cout << "trying to create a random sample inside rand90 block: " << i << endl;
+                rrt_replan->random_sample(&qrand_x, &qrand_y);                                  // <DOUBT> Why should sampled point be valid. Shouldn't extend be valid?
+            } //while (isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, qrand_x, qrand_y, cur_time, time_hor));
         }
         else
         {
-            // cout << "trying to sample goal inside else block" << endl;
+            // cout << "trying to sample goal inside else block: " << i << endl;
             goal_sample = true;
             rrt_replan->goal_sample(&qrand_x, &qrand_y);
         }
@@ -233,7 +233,7 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         double qnew_x, qnew_y;
 
         int qnearID = rrt_replan->nearest_neighbor(qrand_x, qrand_y);
-        //Check if edge is valid against static obstacles
+        //Check if edge is valid against static obstacles <possible BUG> Shouldn't valid edge be tested against dynamic valid edge or run static against interpolated time
         bool status = rrt_replan->valid_edge(qrand_x, qrand_y, qnearID, &qnew_x, &qnew_y, E, cur_time); 
         
         //Check if edge is valid against dynamic obstacles
@@ -247,7 +247,7 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
                 --i;
                 break;
             }
-            status = true;
+            status = true;      // <BUG: overrides static obst freeness>
         }
         
         if (status)
@@ -269,7 +269,6 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
             break;
         }
 
-        if(i == 10) break;
     }
 
     if (goal_reached)
@@ -302,11 +301,11 @@ void Robot::replan(){
     }
 
     // Variables
-    double time_hor = 1;
+    double time_hor = 2;
     double vel = getVel();
     double dist_des = time_hor * vel;
     vector<DynamObstacle*> dynamic_obs = map->get_dynam_obs_vec();
-    cout << "Cur step outside the loop: " << cur_step << endl;
+    // cout << "Cur step outside the loop: " << cur_step << endl;
     
     
     while(!robotAtGoal()){
@@ -319,26 +318,31 @@ void Robot::replan(){
 
         // Check Collision <test further on some specific cases - smaller env/dyn obs moving sides>
         // /*
-        unsigned long int cur_time = world->get_system_time(); // Fix world->get_system_time()
+        unsigned long int cur_time = world->get_system_time();
         
         double dist_trav = 0;
         bool obs_blocking = false;
         int cur_idx = cur_step;
-
         bool first_edge = true;
+
+        Node* replan_goal = NULL;
+        Node* replan_start = plan[cur_step];
+
         while (dist_trav < dist_des)
         {   
+            replan_goal = plan[cur_idx];
             if (plan[cur_idx]->x == goal->x && plan[cur_idx]->y == goal->y)
             {
-                //cout << "Current Index is Goal" << endl;
+                //cout << "Current Index is Goal" << endl; <BUG: goal would never be sent as next destination then?>
                 break;
             }
+
             int next_idx = cur_idx - 1;
             dist_trav += sqrt(pow(plan[cur_idx]->x - plan[next_idx]->x, 2) + pow(plan[cur_idx]->y - plan[next_idx]->y, 2));
             
-
             for (auto& dyn_obst : dynamic_obs)
             {
+                // <ENHANCEMENT: check at cur_time + dt is point valid, i.e time horizon zero>
                 if (!dyn_obst->isEdgeDynamicValid(plan[cur_idx]->x, plan[cur_idx]->y, plan[next_idx]->x, plan[next_idx]->y, cur_time, time_hor))
                 {   
                     if(first_edge){
@@ -350,26 +354,38 @@ void Robot::replan(){
             }
             cur_idx = next_idx;
         }
-        cout << "Desired Distance " << dist_des << " Travelled Distance " << dist_trav << endl;
-        cout << sqrt(pow(plan[cur_idx]->x - plan[cur_step]->x, 2) + pow(plan[cur_idx]->y - plan[cur_step]->y, 2)) << endl;
+        // cout << "Desired Distance " << dist_des << " Travelled Distance " << dist_trav << endl;
+        // cout << sqrt(pow(plan[cur_idx]->x - plan[cur_step]->x, 2) + pow(plan[cur_idx]->y - plan[cur_step]->y, 2)) << endl;
         
         // Replan RRT
         vector<Node*> replan_plan;
+
+        // update the local planner goal
+        while(!isValidDynamic(replan_start->x, replan_start->y, 0, replan_goal->x, replan_goal->y, cur_time, time_hor)){
+                if(cur_idx >= 0){
+                    replan_goal = plan[cur_idx];
+                    cur_idx -= 1;
+                }
+                else{
+                    cout << "trying to replan outside the path. Cannot replan anymore. Possibly obstacle moving into goal" << endl;
+                    return;
+                }
+        }
         
         if (obs_blocking)
         {
-            cout << "Before replanning " << replan_plan.size() << endl;
-            Node* replan_start = plan[cur_step];
-            Node* replan_goal = plan[cur_idx];
-
-            cout << "Start index in orignal tree: " << plan[cur_step]->ID << " Target index in OG tree: " << plan[cur_idx]->ID << endl;            
+            // cout << "Before replanning " << replan_plan.size() << endl;
+            
+            // cout << "Start index in orignal tree: " << plan[cur_step]->ID << " Target index in OG tree: " << plan[cur_idx]->ID << endl;            
             generateReplan(replan_start, replan_goal, dist_des, replan_plan, cur_time, time_hor);
-            cout << "After replanning " << replan_plan.size() << endl;
+            // cout << "After replanning " << replan_plan.size() << endl;
             if(replan_plan.size() == 0) break;
         }
+        
         // */
         --cur_step;
         if(cur_step >=0) setDestination(plan[cur_step]);
+        
     }
 
     cout << "Reached goal!" << endl;

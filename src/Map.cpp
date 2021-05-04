@@ -13,7 +13,7 @@ Map::Map(){
     // static_obs_vec.push_back(b2);
 
     // Dynamic Obsracles
-    DynamObstacle* d0 = new DynamObstacle(0, false, 10, 50, 10, 90, 50, 2000);
+    DynamObstacle* d0 = new DynamObstacle(0, false, 30, 50, 5, 70, 50, 2000);
     // DynamObstacle* d1 = new DynamObstacle(1, false, 40, 50, 3, 10, 90, 3000);
 
     dynam_obs_vec.push_back(d0);
