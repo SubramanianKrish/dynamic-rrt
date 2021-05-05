@@ -68,7 +68,7 @@ void Robot::generatePlan()
 {   
     Node* Start = new Node(x, y);
 
-    int number_samples = 10000;
+    int number_samples = 30000;
     
 
     if(!map->isValidPoint(Start->x, Start->y, 0))
@@ -184,7 +184,8 @@ bool Robot::isValidDynamic(double replan_start_x, double replan_start_y, double 
 }
 
 void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_zone, vector<Node*>& replan_plan, unsigned long int cur_time, double time_hor) {
-    int number_samples = 10000;
+    int number_samples = 30000;
+    local_goal = Replan_Goal;
     // double E = 5;
 
     cout << "Asked to reach this goal: " << Replan_Goal->x << " " << Replan_Goal->y << endl;
@@ -194,9 +195,16 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         cout << "Invalid Start Position" << endl;
         return;
     }
+    else
+    {
+        if(!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Start->x, Replan_Start->y, cur_time, time_hor)){
+            cout << "start valid at current time. But invalid at extended time. moving robot anyway" << endl;
+            return;
+        }
+    }
     if (!isValidDynamic(Replan_Start->x, Replan_Start->y, radius_zone, Replan_Goal->x, Replan_Goal->y, cur_time, time_hor))
     {
-        cout << "Invalid Goal Position" << endl;
+        cout << "Invalid Goal Position in generateReplan" << endl;
         // Replan_Goal = goal;
         return;
     }
@@ -244,14 +252,13 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         vector<DynamObstacle*> dynamic_obs = map->get_dynam_obs_vec();
         for (auto& dyn_obst : dynamic_obs)
         {
-            if (!dyn_obst->isEdgeDynamicValid(rrt_replan->samples[qnearID]->x, rrt_replan->samples[qnearID]->y, qnew_x, qnew_y, cur_time, 200*time_hor))
+            if (!dyn_obst->isEdgeDynamicValid(rrt_replan->samples[qnearID]->x, rrt_replan->samples[qnearID]->y, qnew_x, qnew_y, cur_time, time_hor))
             {
                 // cout << "Collision Detected inside replan " << endl;
                 status = false;
                 --i;
                 break;
             }
-            // status = true;      // <BUG: overrides static obst freeness>
         }
         
         if (status)
@@ -270,7 +277,6 @@ void Robot::generateReplan(Node* Replan_Start, Node* Replan_Goal, double radius_
         if (goal_reached)
         {
             cout << "Path Found" << endl;
-            local_goal = Replan_Goal;
             break;
         }
 
@@ -327,7 +333,7 @@ void Robot::replan(){
         // Check Collision <test further on some specific cases - smaller env/dyn obs moving sides>
         // /*
         unsigned long int cur_time = world->get_system_time();
-        cout << "current time as seen inside replan: " << cur_time << endl;
+        // cout << "current time as seen inside replan: " << cur_time << endl;
         
         double dist_trav = 0;
         bool obs_blocking = false;
@@ -366,43 +372,47 @@ void Robot::replan(){
         // cout << "Desired Distance " << dist_des << " Travelled Distance " << dist_trav << endl;
         // cout << sqrt(pow(plan[cur_idx]->x - plan[cur_step]->x, 2) + pow(plan[cur_idx]->y - plan[cur_step]->y, 2)) << endl;
         
-        // Replan RRT
-        vector<Node*> replan_plan;
-
-        // update the local planner goal
-        while(!isValidDynamic(replan_start->x, replan_start->y, 0, replan_goal->x, replan_goal->y, cur_time, time_hor)){
-                if(cur_idx >= 0){
-                    replan_goal = plan[cur_idx];
-                    cur_idx -= 1;
-                }
-                else{
-                    cout << "trying to replan outside the path. Cannot replan anymore. Possibly obstacle moving into goal" << endl;
-                    return;
-                }
-        }
-        // Replan Goal Index in original plan = cur_idx + 1
-        // Size of original plan that is important will be cur_idx + 2
         
         if (obs_blocking)
         {
+            // Replan RRT
+            vector<Node*> replan_plan;
+
+            // update the local planner goal
+            while(!isValidDynamic(replan_start->x, replan_start->y, 0, replan_goal->x, replan_goal->y, cur_time, 200*time_hor)){
+                    if(cur_idx >= 0){
+                        replan_goal = plan[cur_idx];
+                        cur_idx -= 1;
+                    }
+                    else{
+                        cout << "trying to replan outside the path. Cannot replan anymore. Possibly obstacle moving into goal" << endl;
+                        return;
+                    }
+            }
+            // Replan Goal Index in original plan = cur_idx + 1
+            // Size of original plan that is important will be cur_idx + 2
+            
             // cout << "Before replanning " << replan_plan.size() << endl;
             
             // cout << "Start index in orignal tree: " << plan[cur_step]->ID << " Target index in OG tree: " << plan[cur_idx]->ID << endl;            
-            generateReplan(replan_start, replan_goal, dist_des, replan_plan, cur_time, time_hor);
+            generateReplan(replan_start, replan_goal, dist_des, replan_plan, cur_time, 200*time_hor);
             // cout << "After replanning " << replan_plan.size() << endl;
-            if(replan_plan.size() == 0) break;
             
-            while (plan.size() > cur_idx + 2) {
-                plan.pop_back();
+            if(replan_plan.size()){
+
+                while (plan.size() > cur_idx + 2) {
+                    plan.pop_back();
+                }
+                for (int i = 1; i < replan_plan.size(); i++) {
+                    plan.push_back(replan_plan[i]);
+                }
+                cur_step = plan.size() - 1;
             }
-            for (int i = 1; i < replan_plan.size(); i++) {
-                plan.push_back(replan_plan[i]);
-            }
-            cur_step = plan.size() - 1;
         }
         
         // */
         --cur_step;
+        cout << "Plan size after cur step decrement: " << plan.size() << " cur step in cur plan: " << cur_step << endl;
         if(cur_step >=0) setDestination(plan[cur_step]);
         
     }

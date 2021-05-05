@@ -18,7 +18,7 @@ private:
     std::mutex mapMutex;
 
 public:
-    Map();
+    Map(int id);
     bool isValidPoint(double x, double y, double curr_step);
 
     vector<Obstacle*> get_static_obs_vec();

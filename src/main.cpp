@@ -8,8 +8,8 @@
 #include <thread>
 #include <string>
 #include <memory>
-//#include <unistd.h>
-#include <Windows.h>
+#include <unistd.h>
+// #include <Windows.h>
 
 #include "viewer.h"
 #include "Map.h"
@@ -21,14 +21,22 @@
 
 using namespace std;
 
-int main(){
+int main(int argc, char* argv[]){
     cout << "Starting program" << endl;
 
-    Map* test_map = new Map();
+    string env_id_str = argv[1];
+    int env_id = stoi(env_id_str);
+    Map* test_map = new Map(env_id);
+    Robot* asimov = NULL;
 
     // Make robot
-    // Robot* asimov = new Robot(50, 30, 10, 50, 80, test_map); // Map 1
-    Robot* asimov = new Robot(10, 90, 10, 90, 50, test_map); // Map 2
+    if(env_id == 0)
+    asimov = new Robot(50, 15, 10, 50, 80, test_map); // Map 1 - simple dyn
+    else if(env_id == 1)
+    asimov = new Robot(10, 90, 10, 90, 50, test_map); // Map 2 - dyn obs only
+    else if(env_id == 2)
+    asimov = new Robot(10, 5, 10, 10, 90, test_map); // Map 3 - maze
+
 
     // Make the world and bind to a bg thread
     World* test_world = new World(test_map, asimov, 5); // Update world at 200 Hz (5ms delay)
@@ -47,10 +55,10 @@ int main(){
 
     // generate 5 states and close viewer
     
-    for(int i=0; i<5; ++i){
+    for(int i=0; i<3; ++i){
         cout << "Do whatever" << endl;
         //sleep(1);
-        Sleep(1000);
+        sleep(1);
     }
     
     /*
