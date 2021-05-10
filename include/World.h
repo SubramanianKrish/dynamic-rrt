@@ -8,13 +8,16 @@
 #include <thread>
 #include <mutex>
 #include <iostream>
+#include <cmath>
 
 #include "Map.h"
+#include "Robot.h"
 
 class World{
 private:
     Map* map;
-    // Robot* robot;
+    Robot* robot;
+
     int updateRatems; // in millisecond  
     
     unsigned long int system_time;
@@ -23,7 +26,7 @@ private:
 public:
     
     // ctor
-    World(Map* ptrMap, int rate);
+    World(Map* ptrMap, Robot* ptrRobot, int rate);
 
     // Update function to bind to thread
     void update();
@@ -33,4 +36,5 @@ public:
 
     // time query
     unsigned long int get_system_time();
+    Map* getMap();
 };
