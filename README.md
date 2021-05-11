@@ -4,7 +4,6 @@ This is a C++ implementation of a Rapidly exploring Random Tree planner for 2D p
 <p align="center">
   <img src="https://github.com/SubramanianKrish/dynamic-rrt/blob/main/maze_map.gif?raw=true" alt="Maze Map"/>
 </p>
-Our implementation is inspired from [this](https://www.youtube.com/watch?v=QLNSkFnBYuM) link.
 
 ## Requirements
 C ++ 11 compiler  
